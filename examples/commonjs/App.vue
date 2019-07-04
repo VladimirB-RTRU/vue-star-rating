@@ -1,7 +1,7 @@
 <template>
     <div>
-        <star-rating :round-start-rating="false" :decrement="1" v-model="ratingSelected"/>
-        <a href="#" @click.prevent="rating = 3.5">Reset</a>
+        <star-rating :round-start-rating="false" :decrement="1" @rating-decrement="getDecrement" v-model="rating"/>
+        <a href="#">Reset</a>
         Rating selected: {{ratingSelected}}
     </div>
 </template>
@@ -12,10 +12,12 @@ export default {
     components: {
         StarRating
     },
+    methods: {
+        getDecrement(rat) {
+            this.ratingSelected = rat
+        }
+    },
     created() {
-       setTimeout(() => {
-            this.rating = 3.5
-        }, 1000)
 
     },
     data() {

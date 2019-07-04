@@ -143,28 +143,29 @@
     methods: {
       setRatingMove($event) {
         if (this.readOnly) return
-
+        this.genStars($event)
+        this.$emit('current-rating', this.currentRating)
+      },
+      genStars($event) {
         const position = this.rtl
           ? (100 - $event.position) / 100
           : $event.position / 100
         this.currentRating = ($event.id + position - 1).toFixed(2)
+
         this.currentRating =
           this.currentRating > this.maxRating
             ? this.maxRating
             : this.currentRating
         this.createStars()
-
-        this.$emit('current-rating', this.currentRating)
       },
       setRating($event) {
         if (this.readOnly) return
+        this.genStars($event)
 
         this.selectedRating = this.currentRating
-        const selectedRating = this.decrement
-          ? this.selectedRating - this.decrement
-          : this.selectedRating
-
-        this.$emit('rating-selected', selectedRating)
+        this.$emit('rating-selected', this.selectedRating)
+        if (this.decrement)
+          this.$emit('rating-decrement', this.selectedRating - this.decrement)
         this.ratingSelected = true
       },
       resetRating() {
@@ -175,7 +176,11 @@
       },
       createStars(round = true) {
         if (round) {
-          this.round()
+          var inv = 1.0 / this.increment
+          this.currentRating = Math.min(
+            this.maxRating,
+            Math.ceil(this.currentRating * inv) / inv,
+          )
         }
         for (var i = 0; i < this.maxRating; i++) {
           let level = 0
@@ -185,13 +190,6 @@
           }
           this.$set(this.fillLevel, i, Math.round(level))
         }
-      },
-      round() {
-        var inv = 1.0 / this.increment
-        this.currentRating = Math.min(
-          this.maxRating,
-          Math.ceil(this.currentRating * inv) / inv,
-        )
       },
     },
     computed: {
